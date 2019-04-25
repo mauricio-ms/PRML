@@ -1,12 +1,12 @@
-function W = min_least_squares(M, x, t)
-%MIN_LEAST_SQUARES Generate arrays of coefficients w to the polynomials of
-% orders based on array M that produce a minimum error to the polynomial
+function W = mlsr(M, x, t, lambda)
+%MLSR Minimizes the error function with a regularization factor generating 
+% a linear system from the partial derivatives of polynomials with the form
 % w0 + w1*x + w2*x.^2 + ... + wM*x.^M
     W = cell(length(M), 1);
     for mi=1:length(M)
         m = M(mi);
         coefficients = m+1;
-        A = zeros(coefficients, coefficients);
+        A = zeros(coefficients, coefficients+1);
         b = zeros(coefficients, 1);
 
         for i=1:coefficients
@@ -15,9 +15,9 @@ function W = min_least_squares(M, x, t)
                 powA = powB + (j-1);
                 A(i, j)= sum(x.^powA);
             end
+            A(i, j+1) = lambda;
             b(i) = sum(t .* x.^powB);
         end
         W{mi} = A\b;
     end
 end
-
