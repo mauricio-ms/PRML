@@ -1,12 +1,15 @@
-function W = mlsr(M, x, t, lambda)
-%MLSR Minimizes the error function with a regularization factor generating 
-% a linear system from the partial derivatives of polynomials with the form
-% w0 + w1*x + w2*x.^2 + ... + wM*x.^M
+function W = linearRegression(M, x, t)
+%LINEARREGRESSION Minimizes the least squares error function.
+%   M is a vector of orders of coefficients. For each coefficient m in M,
+% this function generate a linear system resulting from the concept of
+% the partial derivatives of each coefficient.
+%   x is the input vector.
+%   t is the target vector.
     W = cell(length(M), 1);
     for mi=1:length(M)
         m = M(mi);
         coefficients = m+1;
-        A = zeros(coefficients, coefficients+1);
+        A = zeros(coefficients, coefficients);
         b = zeros(coefficients, 1);
 
         for i=1:coefficients
@@ -15,7 +18,6 @@ function W = mlsr(M, x, t, lambda)
                 powA = powB + (j-1);
                 A(i, j)= sum(x.^powA);
             end
-            A(i, j+1) = lambda;
             b(i) = sum(t .* x.^powB);
         end
         W{mi} = A\b;
